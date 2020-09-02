@@ -165,6 +165,28 @@ class ToDoServiceTest {
 	}
 
 	@Test
+	void whenGetOne_then() throws ToDoNotFoundException {
+		// mock
+		var todo = new ToDoEntity(0l, "Test 1");
+		when(toDoRepository.findById(anyLong())).thenAnswer(i -> {
+			Long id = i.getArgument(0, Long.class);
+			return id == todo.getId() ?
+					Optional.of(todo) : Optional.empty();
+		});
+		// call
+		assertThrows(ToDoNotFoundException.class, () -> toDoService.getOne(1l));
+
+		//call
+		var result = toDoService.getOne(0l);
+
+		//validate
+		assertThat(result, samePropertyValuesAs(
+				ToDoEntityToResponseMapper.map(todo)
+		));
+
+	}
+
+	@Test
 	void whenDeleteOne_thenRepositoryDeleteCalled() {
 		//call
 		var id = 0l;
